@@ -1,0 +1,30 @@
+---
+-  name:  role play
+   hosts:  all
+   vars:
+     haproxy_backend_balance_method: roundrobin
+     haproxy_backend_servers:
+     - name: app1
+       address: 192.168.118.44:80
+     - name: app2
+       address: 192.168.118.45:80
+   tasks:
+   -  name: import haproxy role
+      include_role:
+         name: haproxy-role
+      when: ('proxy' in group_names)
+   -  name: import php role
+      include_role:
+         name: php-role
+      when: ('prod' in group_names)
+   -  name: enable and start httpd
+      service:
+          name: httpd
+          state: started
+          enabled: yes
+   -  name: open http on firewall
+      firewalld:
+          service: http
+          state: enabled
+          permanent: yes
+          immediate: yes

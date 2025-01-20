@@ -1,0 +1,45 @@
+---
+   
+-  name:  storage work
+   hosts: dev
+   tasks:
+   -  name: create partition
+      parted: 
+        device: /dev/sdb
+        number: 1
+        state: present
+        flags: [lvm]
+   -  name: create vg
+      lvg:
+        pvs: /dev/sdb1
+        vg: vgfiles
+   -  name: run setp module so u can update facts
+      setup:
+   -  name: get vg size and convert  to interge
+      set_fact:
+          vgsize: "{{ ansible_facts['lvm']['vgs']['vgfiles']['size_g'] |int }}"
+   -  name: show vgzie value
+      debug:
+         var: "{{ vgsize }}"
+   -  name: lv create
+      lvol:
+        vg: vgfiles
+        lv: lvfiles
+        size: 3g
+      when: vgsize | int > 2
+   -  name:  create an lvm on small volume
+      lvol:
+        vg: vgfiles
+        lv: lvfiles
+        size: 1g 
+      when: vgsize |int <= 2
+   -  name: create file syste
+      filesystem:
+           dev: /dev/vgfiles/lvfiles
+           fstype: xfs
+   -  name: mount file system
+      mount: 
+        src: /dev/vgfiles/lvfiles
+        path: /file1
+        fstype: xfs
+        state: mounted

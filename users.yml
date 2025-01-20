@@ -1,0 +1,30 @@
+---
+-  name:  creating users
+   hosts:  all
+   vars_files:
+          - vars/lock.yml
+          - vars/users_list.yml
+   tasks:
+   -  name: create group devops
+      group: 
+        name: devops
+        state:  present
+   -  name: create managers
+      group:
+        name:  managers
+        state:  present
+   -  name: create uses on dev hosts
+      user: 
+        name: "{{item.username}}"
+        groups:  devops
+        password: "{{ pw_dev |password_hash('sha512') }}"
+        state:  present
+      when:  ('dev'in group_names) and ('developer' in item.job)
+      loop:  "{{users}}"
+   -  name:  create users in proxy host
+      user:
+        name: "{{item.username}}"
+        groups: managers
+        password: "{{ pw_mgr |password_hash('sha512') }}"
+      when: ('proxy' in group_names) and ('manager' in item.job)
+      loop: "{{users}}"

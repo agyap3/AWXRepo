@@ -1,0 +1,22 @@
+---
+-  name:  install packages
+   hosts:  dev,test,webservers
+   tasks: 
+   -  name: install http,mod_ssl and mariadb
+      yum:
+        name:
+           - httpd
+           - mod_ssl
+           - mariadb
+        state:  present
+   -  name:  install development tools on dev
+      yum:
+        name: 
+          - '@Development tools'
+        state:  present 
+      when:  ('dev' in group_names )
+   -  name:  update packages into latest
+      yum:
+        name: '*'
+        state: latest
+      

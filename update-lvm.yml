@@ -1,0 +1,42 @@
+---
+- name: LVM
+  hosts: all
+  tasks:
+    - name: Create volume group
+      lvg:
+        pvs: /dev/sdb
+        vg: research
+      when: ansible_devices.sdb is defined
+    - name: Create logical volume 1500MiB
+      lvol:
+        lv: data
+        vg: research
+        size: 1500M
+      ignore_errors: yes
+      register: x
+ 
+    - block:
+        - name: Display not enough space
+          debug:
+            msg: "not enough space for logical volume"
+        - name: create logical volume 800MiB
+          lvol:
+            lv: data
+            vg: research
+            size: 800M
+          when: "'research' is defined"
+      when: x.failed ==  true
+ 
+      rescue:
+        - name: check if volume group still does not exist
+          debug:
+            msg: "volume group does not exist"
+    - name: create xfs filesystem
+      filesystem:
+        fstype: xfs
+        dev: /dev/research/data
+    - name: create xfs filesystem
+      filesystem:
+        fstype: xfs
+        dev: /dev/research/data   
+

@@ -1,0 +1,17 @@
+---
+-  name: archive logs
+   hosts: all
+   tasks:
+   -  name: compress /var/log into user /home/sandy/ansible/logs.zip
+      archive:
+           path: /var/log
+           dest: /home/sandy/logs.tar.gz
+           owner: sandy
+           group: sandy
+           format: gz
+   -  name: fetch the logs files to the local system
+      fetch: 
+        src: /home/sandy/logs.tar.gz
+        dest: logback-{{inventory_hostname }}.tar.gz
+        flat: yes
+      tags: myfetch

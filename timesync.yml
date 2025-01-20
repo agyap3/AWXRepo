@@ -1,0 +1,9 @@
+---
+-  name: time role
+   hosts: test
+   vars:
+      timesync_ntp_servers:
+        - hostname: 1.centos.pool.ntp.org
+          iburst:  yes
+   roles:
+    -  rhel-system-roles.timesync

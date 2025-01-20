@@ -1,0 +1,12 @@
+---
+-  name: simple task
+   hosts: test
+   vars:
+     run_my_task: true
+     web_pkg: httpd
+
+   tasks:
+   -  name: install {{web_pkg}}
+      yum:
+        name: "{{ web_pkg }}"
+      when: run_my_task

@@ -1,0 +1,9 @@
+---
+-  name:  cronjob
+   hosts: test
+   tasks:
+   -  name: datejob
+      cron:
+        name: datejob
+        hour: '12'
+        job: date >> /root/datefile

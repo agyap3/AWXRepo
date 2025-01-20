@@ -1,0 +1,17 @@
+---
+-  name: register stuff
+   hosts: test
+   tasks:
+   -  name: create a file
+      file: 
+        path: /tmp/testfile
+        state: touch
+      register: myvar
+   -  name: display myvar
+      debug:
+         msg: "my register output is {{myvar }}"
+   -  name: edit file
+      lineinfile:
+           path: /tmp/testfile
+           line: "The Uid is {{myvar.uid }} and {{myvar.gid}} is "
+

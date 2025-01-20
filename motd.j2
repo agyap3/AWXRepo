@@ -1,0 +1,12 @@
+{%if inventory_hostname in groups['dev'] %}
+Development
+{% endif %} 
+{% if inventory_hostname in groups['test'] %}
+Test
+{% endif %}
+{% if inventory_hostname in groups['prod'] %}
+Production
+{% endif %}
+
+
+

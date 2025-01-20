@@ -1,0 +1,9 @@
+---
+-  hosts: test
+   tasks:
+   -  name: install mariadb-server
+      yum:
+        name: mariadb-server
+        state: latest
+      loop: "{{ansible_mounts }}"
+      when: item.mount == "/" and item.size_available > 1500

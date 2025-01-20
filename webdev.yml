@@ -1,0 +1,42 @@
+---
+-  name:  webdev play
+   hosts:  dev
+   tasks:
+   -  name: create a webdev user
+      user: 
+        name:  webdev
+        state: present
+   -  name:  create /webdev 
+      file: 
+        path: /webdev
+        state: directory
+        owner: webdev
+        mode: "2775"
+   -  name:  create a soft link
+      file: 
+        src: /webdev
+        dest: /var/www/html/webdev
+        state:  link
+        force:  yes
+   -  name: copy index file
+      copy: 
+        content:  "Development "
+        dest: /webdev/index.html
+   -  name:  install selinux policy context
+      yum:
+        name: python3-policycoreutils
+        state:  present
+   -  name: set fcontext
+      sefcontext:
+        target: '/webdev(/.*)?'
+        setype: httpd_sys_content_t
+        state:  present
+   -  name: restore context
+      shell: restorecon -Rvv /webdev
+   -  name: open http port
+      firewalld:
+          service:  http
+          state:  enabled
+          permanent:  yes
+          immediate:  yes
+

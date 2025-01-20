@@ -1,0 +1,7 @@
+---
+-  name: facts
+   hosts: test
+   tasks:
+   -  name:   print facts
+      debug:
+          var: ansible_facts['devices']['sda']['partitions']['sda3']['size']

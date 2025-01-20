@@ -1,0 +1,12 @@
+---
+-  name: variable plays
+   hosts: test
+   vars:
+     user: joe
+
+   tasks:
+   -  name: create user {{ user }}
+      user:
+         name: "{{ user }}"
+         
+

@@ -1,0 +1,53 @@
+---
+-  name: configure NTP time sync play
+   hosts: all
+  
+   tasks:
+     -  name: check if time sync is on 
+        shell: ifTimeSync=$(timedatectl | awk '/System clock synchronized/{print $NF}');echo $ifTimeSync
+        register: ifTimeSync
+
+     -  meta: end play if ifTimeSynched have value no  ####or i can use dbug  msg: fail with when condition
+        when: register_ifTimeSynched.stdout is search("yes")
+
+     -  meta: continue play if ifTimeSync is no
+        when: register_ifTimeSync.stdout is search("no")
+        
+     -  name: check if /etc/chrony.conf exists
+        stat:
+          path: /etc/chrony.conf  
+        register: chrony_data 
+     -  name: stop ntpd daemon if is running
+        service:
+           name:  ntpd
+           state: stopped
+     
+     -  name: report if file exists
+        debug:
+          msg: "chrony.conf file exists"
+        when: chrony_data.stat.exists
+     -  name: remove rpm of chrony if file exists
+        shell: rpm -e --nodeps chrony
+        when: chrony_data.stat.exists
+
+     -  debug:
+          msg: "chrony.conf file does not exists we all set with ntp.conf"
+        when: chrony_data.stat.exists == False
+
+     -  name: take a back of existing file if it exists and send a new one
+        copy:
+          src: /home/sandy/ansible/kantp.conf
+          dest: /etc/ntp.conf
+          mode: '0644'
+          backup: yes
+        
+     -  name: let sync time initially 
+        shell: ntpdate 10.22.3.10
+     -  name: sync hwclock with current system clock
+        shell: hwclock -w
+
+     -  name: start ntpd
+        service: 
+           name: ntpd
+           state: started
+           enabled: yes

@@ -1,0 +1,8 @@
+---
+-  name: check for selinux policy
+   hosts:  all
+   tasks:
+   - name: check to selinux policy installl
+     selinux:
+       policy:  targeted
+       state:  enforcing

@@ -1,0 +1,13 @@
+---
+-  name: check to see postfix running
+   hosts: test
+   tasks:
+   -  name: get postfix status
+      command: /usr/bin/systemctl is-active postfix
+      ignore_errors: yes
+      register: result
+   -  name: restart httpd
+      service: 
+          name: httpd
+          state: restart
+      when: result.rc == 0

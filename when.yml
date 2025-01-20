@@ -1,0 +1,12 @@
+---
+-  hosts: test
+   tasks:
+   -  name:  create users
+      user:
+        name: "{{item}}"
+        groups: wheel
+        state: present
+      loop:
+        - violent
+        - graham
+        - bethany 

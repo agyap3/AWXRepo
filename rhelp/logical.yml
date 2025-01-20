@@ -1,0 +1,49 @@
+---
+-  name: lvm play
+   hosts: all
+   tasks:
+   -  name: create vg group
+      lvg:
+         pvs: /dev/sdb
+         vg: vgdata
+      register: vg_result
+      when: ansible_devices['sdb'] is defined
+   -  name: get vgdata sizes
+      set_fact:
+         vgdataSize: "{{ ansible_lvm['vgs']['vgdata']['size_g']| float }}"
+   -  name: print details of {{ vgdataSize }}
+      debug:
+        msg: This is the size of {{ vgdataSize }}
+   -  name: create logical volume
+      block:
+        -  name: create lvdata with 1500m
+           lvol:
+             vg: vgdata
+             lv: lvdata
+             size: '1500m'
+           when: vgdataSize is defined
+      rescue:
+        -  name: check space in vgdata group and send message
+           debug:
+             msg: "Not Enough space in the vgdata volume"
+           when: vgdataSize is defined
+        -  name: create smaller lvdata
+           lvol:
+             vg: vgdata
+             lv: lvdata
+             size: '800m'
+           when: vgdataSize is defined
+        -  name: check if vgdata volume exist
+           debug:
+             msg: "vgdata group does not exist"
+           when: vg_result.find.vgdata is not defined
+        -  name: create filesystem
+           filesystem:
+             dev: /dev/vgdata/lvdata
+             fstype: ext4
+
+
+
+        
+
+

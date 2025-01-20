@@ -1,0 +1,35 @@
+---
+-  name: logical volume stuff
+   hosts: test
+   tasks:
+   -  name: create a partition
+      parted: 
+        device: /dev/sdb
+        number: "1"
+        flags: [lvm]
+        state:  present
+   -  name: create vg
+      lvg:
+        pvs:  /dev/sdb1
+        vg: vg0
+      when: ansible_devices.sdb1.partitions is defined
+   -  name: create lv
+      lvol:
+        vg: vg0
+        lv: lv0
+        size: 2400m
+      when: ansible_lvm.vgs.vg0 is defined and ((ansible_lvm.vgs.vg0.size_g |float ) > 2.1 )
+   -  name:  if vg0 is more than 2.1 
+      debug:
+         msg: not Enough space in the volume group
+   -  name: create a smaller group
+      lvol:
+        vg:  vg0
+        lv:  lv0
+        size: 1500m 
+      when: ansible_lvm.vgs.vg0 is defined and ((ansible_lvm.vgs.vg0.size_g |float ) < 2.1 )
+   -  name: create file system
+      filesystem:
+          dev: /dev/vg0/lv0
+          fstype: xfs
+      when: ansible_lvm.vgs.vg0 is defined

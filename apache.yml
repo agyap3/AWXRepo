@@ -1,0 +1,5 @@
+---
+-  name:  sample-apache role
+   hosts:  webservers
+   roles:
+      - sample-apache

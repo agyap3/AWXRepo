@@ -1,0 +1,9 @@
+---
+-  name:  
+   hosts:  all
+   tasks:
+   -  name: set boot target to multiuser
+      file:
+        src: /usr/lib/systemd/system/multi-user.target
+        dest: /etc/systemd/system/default.target
+        state:  link

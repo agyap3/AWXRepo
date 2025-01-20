@@ -1,0 +1,15 @@
+---
+-  name:  search for /dev/sdb continue
+   hosts:  dev
+   tasks:
+   vars:
+     disk_name: sdb
+   tasks:
+   -  name: abort if second disk does not exist
+      assert:
+        that: 
+          - "ansible_facts['devices']['{{disk_name}}'] is defined"
+        fail_msg: second disk not found
+   -  name:  message
+      debug:
+        msg: "{{ disk_name }} was found, lets continue" 

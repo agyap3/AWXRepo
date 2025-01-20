@@ -1,0 +1,50 @@
+---
+-  name:  create storage
+   hosts: dev
+   tasks:
+   -  name: create a partion
+      parted: 
+        device: /dev/sdb
+        number: "1"
+        flags: [lvm]
+        part_start: "1"
+        part_end: "500"
+        unit: MB
+        state:  present
+   -  name: create second partition
+      parted:
+         device: /dev/sdb
+         number: "2"
+         part_start: "501"
+         part_end:   "1000"
+         flags: [lvm]
+         state:  present
+   -  name: create a volume group 
+      lvg:  
+        pvs: /dev/sdb2
+        vg:  vgdata
+        pesize: "8"
+   -  name:  add the task that create logical volume with the vgs
+      lvol:
+        vg: vgdata
+        lv: lvdata
+        size: 100%FREE
+   -  name:  create xfs file system
+      filesystem:
+          dev:  /dev/vgdata/lvdata
+          fstype: xfs
+   -  name: mount file system
+      mount: 
+        src:   /dev/vgdata/lvdata
+        path:  /data
+        fstype:  xfs
+        state:  mounted
+   -  name:  setup up swap
+      block:
+      -  name: make the swap file system
+         filesystem:
+             dev: /dev/sdb1
+             fstype:  swap
+      -  name: activate swap
+         command: swapon /dev/sdb1
+         when: ansible_swaptotal_mb < 256

@@ -1,0 +1,21 @@
+---
+-  name: mariadDB server running
+   hosts: test
+   vars:
+     mariadb_packages: 
+          - mariadb-server
+          - python3-PyMySQL
+   tasks:
+   -  name: instaall package
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ mariadb_packages }}"
+      when: ansible_distribution == "CentOS"
+
+   -  name: start mariadb service
+      service:
+          name: mariadb
+          state: started
+          enabled: true
+
