@@ -3,6 +3,7 @@ all:
   hosts:
     ubuntu-hosts:
        ansible_host: 192.168.255.128
-    rhel-hosts:
+    rhel-host1:
        ansible_host: 192.168.255.129
+    rhel-host2:
        ansible_host: 192.168.255.193
