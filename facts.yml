@@ -1,6 +1,6 @@
 ---
 -  name: facts
-   hosts: test
+   hosts: all
    tasks:
    -  name:   print facts
       debug:
