@@ -1,15 +1,8 @@
-[dev]
-node1.example.com
-
-[test]
-node2.example.com
-
-[proxy]
-node3.example.com
-
-[prod]
-node4.example.com
-node5.example.com
-
-[webservers:children]
-prod
+---
+all:
+  hosts:
+    ubuntu-hosts:
+       ansible_host: 192.168.255.128
+    rhel-hosts:
+       ansible_host: 192.168.255.129
+       ansible_host: 192.168.255.193
